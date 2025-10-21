@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================
+   BASE / TYPOGRAPHY / CONTENT
+   ========================================================= */
+@layer base {
+  html { scroll-behavior: smooth; }
+  html, body { height: 100%; }
+
+  /* Suavização cross-browser */
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  /* Headings com leve tracking negativo (cara de produto premium) */
+  h1, h2, h3 { letter-spacing: -0.02em; }
+
+  /* Âncoras: evita que o heading fique atrás do topo fixo */
+  .post-content h2,
+  .post-content h3,
+  .post-content h4 {
+    scroll-margin-top: 6rem; /* ~ top-24 */
+  }
+
+  /* Conteúdo padrão */
+  .post-content h1,
+  .post-content h2,
+  .post-content h3,
+  .post-content h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .post-content p { margin: 1rem 0; }
+
+  .post-content a {
+    color: rgb(2 132 199); /* sky-600 */
+    text-decoration: none;
+  }
+  .post-content a:hover { text-decoration: underline; }
+
+  .post-content img {
+    border-radius: 0.75rem; /* rounded-xl */
+    margin: 1.5rem 0;
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .post-content figure { margin: 1.25rem 0; }
+  .post-content figcaption {
+    font-size: .8rem;
+    color: #6b7280; /* slate-500 */
+    margin-top: .25rem;
+  }
+
+  .post-content ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+  }
+  .post-content ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .post-content blockquote {
+    border-left: 4px solid #e5e7eb; /* slate-200 */
+    padding-left: 1rem;
+    color: #374151; /* slate-700 */
+    font-style: italic;
+    margin: 1.5rem 0;
+    background: #f8fafc; /* slate-50 */
+  }
+
+  .post-content pre {
+    background: #1f2937; /* slate-800 */
+    color: #f9fafb; /* slate-50 */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 1.25rem 0;
+  }
+  .post-content code {
+    background: #f3f4f6; /* slate-100 */
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  /* Tabelas responsivas: usar .table-wrap no container */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1.25rem 0;
+  }
+  .post-content table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px; /* força scroll se estreito */
+  }
+  .post-content table td,
+  .post-content table th {
+    border: 1px solid #e5e7eb; /* slate-200 */
+    padding: 0.5rem;
+  }
+  .post-content table th {
+    background: #f9fafb; /* slate-50 */
+    font-weight: 600;
+    text-align: left;
+  }
+}
+
+/* =========================================================
+   COMPONENTS / TOC
+   ========================================================= */
+@layer components {
+  /* Caixa do TOC (igual ao componente) */
+  .toc {
+    position: sticky;
+    top: 5rem; /* ~ top-20 */
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb; /* slate-200 */
+    background: rgba(255,255,255,.7);
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+  }
+  .toc-title {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #64748b; /* slate-500 */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .toc-list { margin-top: .75rem; }
+  .toc-link {
+    display: block;
+    color: #334155;            /* slate-700 */
+    line-height: 1.25rem;
+    text-decoration: none;
+  }
+  .toc-link:hover { text-decoration: underline; }
+  .toc-link.is-active {
+    color: #0c4a6e;           /* sky-900-ish */
+    font-weight: 600;
+  }
+  .toc-sublist {
+    margin-top: .25rem;
+    margin-left: .75rem;
+    padding-left: .75rem;
+    border-left: 1px solid #e5e7eb; /* slate-200 */
+  }
+}
+
+/* =========================================================
+   OPTIONAL: Dark mode refinements (caso use dark:)
+   ========================================================= */
+/*
+@media (prefers-color-scheme: dark) {
+  .post-content blockquote { border-left-color: #334155; background: #0b1220; color: #cbd5e1; }
+  .toc { background: rgba(15,23,42,.6); border-color: #334155; }
+  .toc-title { color: #94a3b8; }
+  .toc-link { color: #cbd5e1; }
+  .toc-link.is-active { color: #38bdf8; }
+}
+*/
+
+/* Utilitário opcional para textos mais compactos em páginas longas */
+.prose-compact p { line-height: 1.55; }
