@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 }
 
 // ⚠️ Funding Choices usa o **publisher ID** (AdX/AdSense), não o network code
-const FC_PUB = (process.env.NEXT_PUBLIC_FC_PUB || 'pub-1610389804575958').trim()
+const FC_PUB = (process.env.NEXT_PUBLIC_FC_PUB || 'pub-4096291246940715').trim()
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -73,3 +73,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
+
