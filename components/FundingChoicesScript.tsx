@@ -1,75 +1,73 @@
 // components/FundingChoicesScript.tsx
-"use client";
+'use client';
+import Script from 'next/script';
 
-import Script from "next/script";
-
-type Props = { client: string }; // ex.: "pub-1610389804575958"
+type Props = { client: string }; // ex.: "pub-1610389804575958" (Ad Manager)
 
 export default function FundingChoicesScript({ client }: Props) {
-  const fcSrc = `https://fundingchoicesmessages.google.com/i/${client}?ers=2`;
+  const pub = (client || '').trim();
 
   return (
     <>
-      {/* FC (CMP) */}
-      <Script id="fc-cmp" src={fcSrc} strategy="afterInteractive" />
-
-      {/* Consent defaults + ponte entre FC -> gtag/GPT */}
-      <Script id="consent-defaults" strategy="afterInteractive">
+      {/* Stub IAB TCF + locator (sem TypeScript no inline) */}
+      <Script id="fc-tcf-stub" strategy="beforeInteractive">
         {`
-          // GTM/GA4 consent defaults (nega até o usuário decidir)
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){ dataLayer.push(arguments); }
+(function () {
+  var w = window;
+  function addLocator() {
+    if (!w.frames['__tcfapiLocator']) {
+      var i = document.createElement('iframe');
+      i.style.display = 'none';
+      i.name = '__tcfapiLocator';
+      document.body && document.body.appendChild(i);
+    }
+  }
+  if (document.body) addLocator();
+  else document.addEventListener('DOMContentLoaded', addLocator);
 
-          gtag('consent', 'default', {
-            ad_user_data: 'denied',
-            ad_personalization: 'denied',
-            ad_storage: 'denied',
-            analytics_storage: 'denied',
-            wait_for_update: 500
-          });
+  var queue = [];
+  function tcf() {
+    var args = arguments;
+    if (typeof w.__tcfapi === 'function' && !w.__tcfapi.isStub) {
+      return w.__tcfapi.apply(w, args);
+    }
+    queue.push(args);
+  }
+  tcf.isStub = true;
+  tcf.q = queue;
+  if (!w.__tcfapi) w.__tcfapi = tcf;
 
-          // Helper: aplica consent "granted"/"denied" em GA4 e notifica GPT
-          window.__applyConsent = function(granted) {
-            const yes = granted ? 'granted' : 'denied';
-            gtag('consent', 'update', {
-              ad_user_data: yes,
-              ad_personalization: yes,
-              ad_storage: yes,
-              analytics_storage: yes
-            });
+  w.addEventListener('message', function (event) {
+    try {
+      var data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+      if (data && data.__tcfapiCall) {
+        var ret = { __tcfapiReturn: { returnValue: null, success: false, callId: data.__tcfapiCall.callId } };
+        try {
+          w.__tcfapi(data.__tcfapiCall.command, data.__tcfapiCall.version, function (rv, ok) {
+            ret.__tcfapiReturn.returnValue = rv;
+            ret.__tcfapiReturn.success = ok;
+            event.source && event.source.postMessage(JSON.stringify(ret), '*');
+          }, data.__tcfapiCall.parameter);
+        } catch (e) {
+          event.source && event.source.postMessage(JSON.stringify(ret), '*');
+        }
+      }
+    } catch (e) {}
+  });
 
-            // Notifica GPT para (re)preparar targeting conforme consent
-            if (window.googletag && googletag.apiReady) {
-              try { googletag.pubads().refresh(); } catch(_) {}
-            }
-          };
-
-          // Funding Choices dispara a atualização de consent através da __tcfapi
-          // Aqui, ouvimos mudanças de TCString e aplicamos "granted" quando houver base legal.
-          (function watchTCF(){
-            var tries = 0;
-            function check(){
-              tries++;
-              if (typeof window.__tcfapi === 'function') {
-                window.__tcfapi('addEventListener', 2, function(tcData, success){
-                  if (!success || !tcData) return;
-                  // status: 'useractioncomplete' ou 'tcloaded'
-                  var ok = !!tcData.tcString && (tcData.eventStatus === 'useractioncomplete' || tcData.eventStatus === 'tcloaded');
-                  if (ok) {
-                    // Se houver base legal para ads (propósitos 1/3/4/7 etc.), trate como granted.
-                    // Por simplicidade: se tcString existir, aplicamos "granted".
-                    // (Ajuste se quiser checar granularidade de propósitos/consents.)
-                    window.__applyConsent(true);
-                  }
-                });
-                return;
-              }
-              if (tries < 50) setTimeout(check, 200);
-            }
-            check();
-          })();
+  // Sinal usado por tags Google
+  (window as any).signalGooglefcPresent = function () {};
+})();
         `}
       </Script>
+
+      {/* Loader oficial do Funding Choices (Consent Mode ativo) */}
+      <Script
+        id="fc-loader"
+        src={`https://fundingchoicesmessages.google.com/i/${pub}/cmp.js?tagging=1`}
+        strategy="beforeInteractive"
+        async
+      />
     </>
   );
 }
